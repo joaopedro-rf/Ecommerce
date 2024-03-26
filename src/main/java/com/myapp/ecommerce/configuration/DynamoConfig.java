@@ -16,9 +16,10 @@ import org.springframework.context.annotation.Configuration;
 public class DynamoConfig {
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
-        return AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-east-1"))
-                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+        return AmazonDynamoDBClientBuilder
+                .standard()
+                .withCredentials(new DefaultAWSCredentialsProviderChain()
+                )
                 .build();
     }
 
