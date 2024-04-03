@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.annotations.OptimisticLock;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class SqsConsumer {
 
     private final AmazonSQS amazonSQSClient;
     private final CartService cartService;
+
+    @Value("${SQS_ADD_TO_CART_QUEUE_URL}")
+    private String addToCartQueueUrl;
 
     private final Lock lock = new ReentrantLock();
 
@@ -40,7 +44,7 @@ public class SqsConsumer {
         if (lock.tryLock()) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
-                ReceiveMessageResult result = amazonSQSClient.receiveMessage("https://sqs.us-east-1.amazonaws.com/079393629981/addToCart");
+                ReceiveMessageResult result = amazonSQSClient.receiveMessage(addToCartQueueUrl);
 
                 if (!result.getMessages().isEmpty()) {
                     Message message = result.getMessages().get(0);
@@ -60,7 +64,7 @@ public class SqsConsumer {
                     cartService.addProductToCart(cart, productId, quantity);
 
                     amazonSQSClient.deleteMessage(new DeleteMessageRequest()
-                            .withQueueUrl("https://sqs.us-east-1.amazonaws.com/079393629981/addToCart")
+                            .withQueueUrl(addToCartQueueUrl)
                             .withReceiptHandle(message.getReceiptHandle()));
                 }
 
