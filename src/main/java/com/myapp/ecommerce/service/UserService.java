@@ -26,12 +26,12 @@ public class UserService {
     }
 
     public void deleteUserById(String id){
-        userRepository.delete(this.findUserById(id));
+        userRepository.deleteUserById(id);
     }
 
     public ResponseEntity<User> updateUser(User updatedUser, String id){
         updatedUser = userRepository.saveAndReturnUpdatedUser(updatedUser,id);
-
+        
         if(updatedUser == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

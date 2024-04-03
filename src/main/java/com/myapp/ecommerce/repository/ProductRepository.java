@@ -5,9 +5,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.myapp.ecommerce.entity.Product;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,5 +40,13 @@ public class ProductRepository extends DynamoDBMapper{
                 .withExpressionAttributeValues(expressionAttributeValues);
 
         return dynamoDBMapper.scan(Product.class, scanExpression);
+    }
+
+    public Product findProductById(String id){
+        return dynamoDBMapper.load( Product.class ,id);
+    }
+
+    public void deleteProductById(String id){
+        dynamoDBMapper.delete(this.findProductById(id));
     }
 }

@@ -1,4 +1,4 @@
-package com.myapp.ecommerce.service;
+package com.myapp.ecommerce.service.aws;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.springframework.beans.factory.annotation.Autowired;

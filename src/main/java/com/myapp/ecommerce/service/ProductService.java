@@ -18,13 +18,13 @@ public class ProductService {
     }
 
     public Product findProductById(String productId){
-        return productRepository.load(Product.class, productId);
+        return productRepository.findProductById( productId);
     }
 
     public List<Product> findProductByName(String name) {
         return productRepository.findProductByName(name);
     }
     public void deleteProductById(String productId){
-        productRepository.delete(this.findProductById(productId));
+        productRepository.deleteProductById(productId);
     }
 }

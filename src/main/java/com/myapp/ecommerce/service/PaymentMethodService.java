@@ -15,10 +15,10 @@ public class PaymentMethodService {
         return paymentMethodRepository.saveAndReturn(paymentMethod);
     }
 
-    public PaymentMethod findPaymentById(String PaymentId){
-        return paymentMethodRepository.load(PaymentMethod.class, PaymentId);
+    public PaymentMethod findPaymentById(String paymentId){
+        return paymentMethodRepository.findPaymentById( paymentId);
     }
-    public void deletePaymentById(String PaymentId){
-        paymentMethodRepository.delete(this.findPaymentById(PaymentId));
+    public void deletePaymentById(String paymentId){
+        paymentMethodRepository.deletePaymentById(paymentId);
     }
 }

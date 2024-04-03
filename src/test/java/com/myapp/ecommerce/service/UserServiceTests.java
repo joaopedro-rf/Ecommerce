@@ -59,11 +59,9 @@ public class UserServiceTests {
     @Test
     @DisplayName("Success - updates and returns a User using id")
     void update_ReturnUser_WhenSuccessful() throws ParseException {
-        User user = createValidUpdatedUser();
-        when(userRepository.saveAndReturn(any(User.class))).thenReturn(createValidUpdatedUser());
 
-        userRepository.saveAndReturnUpdatedUser( createValidUpdatedUser(), createValidUpdatedUser().getUserID());
-        log.info("user " + user);
+        User user = userService.updateUser( createValidUpdatedUser(), createValidUpdatedUser().getUserID()).getBody();
+
         Assertions.assertThat(user).isNotNull().isEqualTo(createValidUpdatedUser());
         verify(userRepository).saveAndReturnUpdatedUser(createValidUpdatedUser(), createValidUpdatedUser().getUserID());
     }
@@ -72,8 +70,9 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Success - removes a User using id")
-    void delete_RemovePacient_WhenSuccessful(){
+    void delete_RemoveUser_WhenSuccessful() throws ParseException {
         Assertions.assertThatCode(() -> userService.deleteUserById("123")).doesNotThrowAnyException();
+        verify(userRepository, times(1)).deleteUserById(createValidUser().getUserID());
     }
 
 }

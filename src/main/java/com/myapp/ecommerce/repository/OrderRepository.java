@@ -21,4 +21,12 @@ public class OrderRepository extends DynamoDBMapper {
         dynamoDBMapper.save(order);
         return order;
     }
+
+    public Order findOrderById(String id){
+        return dynamoDBMapper.load(Order.class, id);
+    }
+
+    public void deleteOrderById(String id){
+        dynamoDBMapper.delete(this.findOrderById(id));
+    }
 }

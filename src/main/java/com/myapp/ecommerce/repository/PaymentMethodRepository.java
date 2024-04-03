@@ -21,4 +21,12 @@ public class PaymentMethodRepository extends DynamoDBMapper {
         return paymentMethod;
     }
 
+    public PaymentMethod findPaymentById(String id){
+        return dynamoDBMapper.load(PaymentMethod.class, id);
+    }
+
+    public void deletePaymentById(String id){
+        dynamoDBMapper.delete(this.findPaymentById(id));
+    }
+
 }

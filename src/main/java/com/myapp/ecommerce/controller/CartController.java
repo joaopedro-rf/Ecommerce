@@ -1,6 +1,7 @@
 package com.myapp.ecommerce.controller;
 
 import com.myapp.ecommerce.entity.Cart;
+import com.myapp.ecommerce.service.AddToCartMessageService;
 import com.myapp.ecommerce.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,13 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private AddToCartMessageService addToCartMessageService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Cart createCart(@RequestBody Cart cart){
-        return cartService.SaveCart(cart);
+    @PostMapping("/addProduct")
+    @ResponseStatus(HttpStatus.OK)
+    public void addProductToCart(@RequestParam String productId, @RequestParam String userId, @RequestParam int quantity){
+       addToCartMessageService.addToCartProducerSQS(productId, userId,quantity);
     }
 
     @GetMapping("/{cartId}")

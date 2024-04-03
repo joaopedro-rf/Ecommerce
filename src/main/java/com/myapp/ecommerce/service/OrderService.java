@@ -16,9 +16,9 @@ public class OrderService {
     }
 
     public Order findOrderById(String orderId){
-        return orderRepository.load(Order.class, orderId);
+        return orderRepository.findOrderById( orderId);
     }
     public void deleteOrderById(String orderId){
-        orderRepository.delete(this.findOrderById(orderId));
+        orderRepository.deleteOrderById(orderId);
     }
 }

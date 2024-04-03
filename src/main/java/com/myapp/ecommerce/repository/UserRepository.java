@@ -55,4 +55,8 @@ public class UserRepository extends DynamoDBMapper {
         return this.load( User.class ,id);
     }
 
+    public void deleteUserById(String id){
+        dynamoDBMapper.delete(this.findUserById(id));
+    }
+
 }

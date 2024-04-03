@@ -17,10 +17,10 @@ public class AddressService {
     }
 
     public Address findAddressById(String addressId){
-        return addressRepository.load(Address.class, addressId);
+        return addressRepository.findAddressById( addressId);
     }
     public void deleteAddressById(String addressId){
-        addressRepository.delete(this.findAddressById(addressId));
+        addressRepository.deleteAddressById(addressId);
     }
 
 }
