@@ -1,4 +1,4 @@
-package com.myapp.ecommerce.entity;
+package com.myapp.ecommerce.entity.awsDto;
 
 import org.springframework.stereotype.Component;
 

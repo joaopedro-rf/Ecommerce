@@ -1,15 +1,21 @@
 package com.myapp.ecommerce.controller;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.myapp.ecommerce.entity.Product;
 import com.myapp.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/products")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductController {
 
     @Autowired
@@ -25,6 +31,13 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public Product findProductById(@PathVariable String productId){
         return productService.findProductById(productId);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Page<Product> findAllPageableProducts(@RequestParam(defaultValue = "0") int pageNumber,
+                                                              @RequestParam(defaultValue = "10") int pageSize){
+        return productService.getAllPageableProducts(pageNumber, pageSize);
     }
 
     @GetMapping("/name/{name}")

@@ -11,8 +11,8 @@ public class CartCreator {
 
     public static Cart createCartToBeSaved( ){
         List<Product> productList = new ArrayList<>();
-        productList.add(new Product("1", "Product 1", "Description 1", 10, "www.foto.com"));
-        productList.add(new Product("2", "Product 2", "Description 2", 20, "www.foto.com"));
+        productList.add(new Product("1", "Product 1", "Description 1", 10, 20.99,"www.foto.com"));
+        productList.add(new Product("2", "Product 2", "Description 2", 20, 21.99, "www.foto.com"));
         return new Cart("898","989",999.99, productList);
     }
 

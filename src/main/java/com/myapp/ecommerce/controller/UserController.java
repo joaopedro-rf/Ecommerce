@@ -9,15 +9,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user){
-        return userService.SaveUser(user);
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user){
+        return userService.register(user);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody User user){
+        return userService.login(user);
     }
 
     @GetMapping("/{id}")

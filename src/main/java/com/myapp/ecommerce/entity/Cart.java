@@ -40,8 +40,6 @@ public class Cart {
     public Cart() {
     }
 
-
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "UserIdIndex", attributeName = "userId")
     @DynamoDBAttribute(attributeName = "userId")
     private String userId;
 

@@ -3,9 +3,15 @@ package com.myapp.ecommerce.repository;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.myapp.ecommerce.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -40,6 +46,13 @@ public class ProductRepository extends DynamoDBMapper{
                 .withExpressionAttributeValues(expressionAttributeValues);
 
         return dynamoDBMapper.scan(Product.class, scanExpression);
+    }
+
+    public Page<Product> findAllProducts(int pageNumber, int pageSize) {
+        List<Product> products = dynamoDBMapper.scan(Product.class, new DynamoDBScanExpression());
+        int start = pageNumber * pageSize;
+        int end = Math.min((start + pageSize), products.size());
+        return new PageImpl<>(products.subList(start, end), PageRequest.of(pageNumber, pageSize), products.size());
     }
 
     public Product findProductById(String id){

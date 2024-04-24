@@ -1,16 +1,15 @@
 package com.myapp.ecommerce.service.aws;
 
-import com.amazonaws.services.s3.model.ObjectLockMode;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.myapp.ecommerce.entity.AddToCartMessage;
+import com.myapp.ecommerce.entity.awsDto.AddToCartMessage;
 import com.myapp.ecommerce.entity.Cart;
+import com.myapp.ecommerce.entity.awsDto.RefundCartMessage;
+import com.myapp.ecommerce.exception.InvalidRequestException;
 import com.myapp.ecommerce.service.CartService;
-import jakarta.persistence.LockModeType;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.annotations.OptimisticLock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +29,9 @@ public class SqsConsumer {
     @Value("${SQS_ADD_TO_CART_QUEUE_URL}")
     private String addToCartQueueUrl;
 
+    @Value("${SQS_REFUND_CART_QUEUE_URL}")
+    private String refundCartQueueUrl;
+
     private final Lock lock = new ReentrantLock();
 
     @Autowired
@@ -38,9 +40,8 @@ public class SqsConsumer {
         this.cartService = cartService;
     }
 
-
-    @Scheduled(fixedDelay = 100)
-    public void consumeMessageSQS() {
+    @Scheduled(fixedDelay = 5000)
+    public void consumeAddToCartMessageSQS() {
         if (lock.tryLock()) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -55,34 +56,81 @@ public class SqsConsumer {
                     String productId = addToCartMessage.getProductId();
                     Integer quantity = addToCartMessage.getQuantity();
 
-
-                    Cart cart = cartService.findCartByUserId(userId);
-                    log.info("OBJETO CART ++++++  " + cart);
+                    Cart cart = cartService.findCartByUserId(userId).getBody();
                     if (cart == null) {
                         cart = cartService.createCart(userId);
                     }
+                    log.info("VALOR DE CART: " + cart + " PRODUCT: " + productId + " QUANTITY:  " + quantity);
                     cartService.addProductToCart(cart, productId, quantity);
 
-                    amazonSQSClient.deleteMessage(new DeleteMessageRequest()
+                    DeleteMessageRequest deleteRequest = new DeleteMessageRequest()
                             .withQueueUrl(addToCartQueueUrl)
-                            .withReceiptHandle(message.getReceiptHandle()));
+                            .withReceiptHandle(message.getReceiptHandle());
+                    amazonSQSClient.deleteMessage(deleteRequest);
                 }
-
-
             } catch (QueueDoesNotExistException e) {
-                System.out.println("Fila nao existe" + e.getMessage());
+                System.out.println("Queue doesnt exist" + e.getMessage());
             } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (AmazonSQSException e) {
+                System.out.println("Error deleting message from SQS queue: " + e.getErrorMessage());
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            System.out.println("A message is already being processed.");
+        }
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void refundCartMessageSQS() {
+        if (lock.tryLock()) {
+            Message message = null;
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                ReceiveMessageResult result = amazonSQSClient.receiveMessage(refundCartQueueUrl);
+
+                if (!result.getMessages().isEmpty()) {
+                    message = result.getMessages().get(0);
+
+                    RefundCartMessage refundCartMessage = objectMapper.readValue(message.getBody(), RefundCartMessage.class);
+
+                    String userId = refundCartMessage.getUserId();
+                    String productId = refundCartMessage.getProductId();
+                    Integer quantity = refundCartMessage.getQuantity();
+
+                    Cart cart = cartService.findCartByUserId(userId).getBody();
+                    if (cart == null) {
+                        return;
+                    }
+
+
+                    cartService.deleteProductFromCart(cart, productId, quantity);
+                    DeleteMessageRequest deleteRequest = new DeleteMessageRequest()
+                            .withQueueUrl(refundCartQueueUrl)
+                            .withReceiptHandle(message.getReceiptHandle());
+                    amazonSQSClient.deleteMessage(deleteRequest);
+
+                }
+            } catch (QueueDoesNotExistException e) {
+                System.out.println("Queue doesnt exist" + e.getMessage());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (AmazonSQSException e) {
+                System.out.println("Error deleting message from SQS queue: " + e.getErrorMessage());
+            } catch (InvalidRequestException e) {
+                DeleteMessageRequest deleteMessageRequest = new DeleteMessageRequest()
+                        .withQueueUrl(refundCartQueueUrl)
+                        .withReceiptHandle(message.getReceiptHandle());
+
+                amazonSQSClient.deleteMessage(deleteMessageRequest);
                 throw new RuntimeException(e);
             } finally {
                 lock.unlock();
             }
         } else {
-
-            log.info("Uma mensagem já está sendo processada. Aguarde.");
+            System.out.println("A message is already being processed.");
         }
-
-
     }
-
-
 }
+

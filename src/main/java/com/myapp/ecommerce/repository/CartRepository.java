@@ -3,11 +3,13 @@ package com.myapp.ecommerce.repository;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.myapp.ecommerce.entity.Cart;
 import com.myapp.ecommerce.entity.Order;
 import com.myapp.ecommerce.entity.Product;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
+@Log4j2
 public class CartRepository extends DynamoDBMapper {
 
     @Autowired
@@ -35,19 +38,16 @@ public class CartRepository extends DynamoDBMapper {
     }
 
     public Cart findCartByUserId(String userId) {
-        Map<String, String> expressionAttributeNames = new HashMap<>();
-        expressionAttributeNames.put("#userId", "userId");
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 
-        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
-        expressionAttributeValues.put(":userId", new AttributeValue().withS(userId));
+        PaginatedScanList<Cart> carts = dynamoDBMapper.scan(Cart.class, scanExpression);
+        log.info("VALOR DO CARRINHO NO REPOSITORY: " + carts);
 
-        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("#userId = :userId")
-                .withExpressionAttributeNames(expressionAttributeNames)
-                .withExpressionAttributeValues(expressionAttributeValues);
+        return carts.stream()
+                .filter(cart -> cart.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
 
-        List<Cart> carts = dynamoDBMapper.scan(Cart.class, scanExpression);
-        return carts.isEmpty() ? null : carts.get(0);
     }
 
 
