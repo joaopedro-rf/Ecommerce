@@ -32,7 +32,7 @@ public class EcommerceMvcConfigurer implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://uaumart-ecommerce.vercel.app", "https://frontend-ecommerce-git-main-joao-pedros-projects-baa2d387.vercel.app"));
+        configuration.setAllowedOrigins(Arrays.asList("https://uaumart-ecommerce.vercel.app", "https://frontend-ecommerce-git-main-joao-pedros-projects-baa2d387.vercel.app", "https://http-url.d3cdbgxjly4uyy.amplifyapp.com/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
