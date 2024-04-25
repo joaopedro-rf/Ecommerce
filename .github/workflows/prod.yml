@@ -1,0 +1,10 @@
+name: Deploy App Ecommerce
+on:
+  push:
+      branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: action/checkout@v3
