@@ -1,7 +1,7 @@
 name: Deploy App Ecommerce
 on:
   push:
-      branches: [main]
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,6 +33,10 @@ jobs:
     steps:
       - name: Pull image from docker hub
         run: docker pull jpedrorf3003/ecommerce:latest
+      - name: Stop and remove existing container
+        run: |
+          docker stop ecommerce_new
+          docker rm ecommerce_new
       - name: Run docker container
         run: docker run -d -p 8080:8080 -e SQS_ADD_TO_CART_QUEUE_URL=${{ secrets.SQS_ADD_TO_CART_QUEUE_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e SQS_REFUND_CART_QUEUE_URL=${{ secrets.SQS_REFUND_CART_QUEUE_URL }} --name ecommerce_new jpedrorf3003/ecommerce
 
