@@ -13,11 +13,14 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
-
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public ResponseEntity<User> register(User user){
         if(userRepository.findUserByEmail(user.getEmail()) !=null){

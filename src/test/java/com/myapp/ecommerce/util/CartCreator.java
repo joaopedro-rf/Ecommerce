@@ -18,8 +18,8 @@ public class CartCreator {
 
     public static Cart createValidCart(){
         List<Product> productList = new ArrayList<>();
-        productList.add(new Product("3", "Product 3", "Description 3", 10, "www.foto.com"));
-        productList.add(new Product("4", "Product 4", "Description 4", 20, "www.foto.com"));
+        productList.add(new Product("3", "Product 3", "Description 3", 10, 20.99, "www.foto.com"));
+        productList.add(new Product("4", "Product 4", "Description 4", 20, 21.99, "www.foto.com"));
         return new Cart("777","555", 888.88, productList);
     }
 }

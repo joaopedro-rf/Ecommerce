@@ -40,7 +40,7 @@ public class UserServiceTests {
     @Test
     @DisplayName("Success - saves and returns a User")
     void saveAndReturnUser_WhenSuccessful() throws ParseException {
-        User created = userService.SaveUser(createUserToBeSaved());
+        User created = userService.register(createUserToBeSaved()).getBody();
         assertThat(created.getName()).isSameAs(createUserToBeSaved().getName());
         Assertions.assertThat(created.getUserID()).isEqualTo("123").isNotNull();
         verify(userRepository).saveAndReturn(createUserToBeSaved());
