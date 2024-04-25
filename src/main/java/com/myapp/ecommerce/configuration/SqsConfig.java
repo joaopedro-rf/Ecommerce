@@ -1,6 +1,7 @@
 package com.myapp.ecommerce.configuration;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ public class SqsConfig {
     public AmazonSQS amazonSQSClient() {
         return AmazonSQSClientBuilder.standard()
                 .withCredentials(new DefaultAWSCredentialsProviderChain())
+                .withRegion(Regions.US_EAST_1)
                 .build();
     }
 }
