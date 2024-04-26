@@ -27,7 +27,7 @@ jobs:
       - name: Login Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build Docker image
-        run: docker build -t jpedrorf3003/ecommerce .
+        run: docker build --no-cache -t jpedrorf3003/ecommerce .
       - name: Push image docker
         run: docker push jpedrorf3003/ecommerce
   deploy:
