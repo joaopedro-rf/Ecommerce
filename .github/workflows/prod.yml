@@ -21,9 +21,6 @@ jobs:
           java-version: '17'
       - name: Build project
         run: mvn clean install
-      - name: Generate SSL certificate and private key
-        run: |
-          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/cert.key -out /tmp/cert.crt -subj "/CN=54.210.75.235.com"
       - name: Login Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build Docker image
@@ -41,7 +38,7 @@ jobs:
           docker stop ecommerce_new
           docker rm ecommerce_new
       - name: Run docker container
-        run: docker run -d -p 443:443 -e SQS_ADD_TO_CART_QUEUE_URL=${{ secrets.SQS_ADD_TO_CART_QUEUE_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e SQS_REFUND_CART_QUEUE_URL=${{ secrets.SQS_REFUND_CART_QUEUE_URL }} --name ecommerce_new -v /tmp/cert.crt:/etc/pki/tls/certs/cert.crt -v /tmp/cert.key:/etc/pki/tls/private/cert.key jpedrorf3003/ecommerce
+        run: docker run -d -p 443:443 -e SQS_ADD_TO_CART_QUEUE_URL=${{ secrets.SQS_ADD_TO_CART_QUEUE_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e SQS_REFUND_CART_QUEUE_URL=${{ secrets.SQS_REFUND_CART_QUEUE_URL }} --name ecommerce_new jpedrorf3003/ecommerce
 
 
 
