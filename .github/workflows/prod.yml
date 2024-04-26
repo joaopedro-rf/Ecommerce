@@ -23,7 +23,7 @@ jobs:
         run: mvn clean install
       - name: Generate SSL certificate and private key
         run: |
-          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/cert.key -out /tmp/cert.crt -subj "/CN=mydomain.com"
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/cert.key -out /tmp/cert.crt -subj "/CN=54.210.75.235.com"
       - name: Login Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build Docker image
