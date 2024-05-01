@@ -3,6 +3,7 @@ package com.myapp.ecommerce.service;
 import com.myapp.ecommerce.entity.User;
 import com.myapp.ecommerce.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

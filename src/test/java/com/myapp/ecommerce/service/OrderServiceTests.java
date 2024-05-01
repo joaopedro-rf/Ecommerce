@@ -1,7 +1,6 @@
 package com.myapp.ecommerce.service;
 
 import com.myapp.ecommerce.entity.Order;
-import com.myapp.ecommerce.entity.PaymentMethod;
 import com.myapp.ecommerce.repository.OrderRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
