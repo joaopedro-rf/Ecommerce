@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapp.ecommerce.entity.awsDto.AddToCartMessage;
 import com.myapp.ecommerce.entity.awsDto.RefundCartMessage;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,6 +36,7 @@ public class SqsProducer {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
     }
 
     public void refundFromCartProducerSQS(String productId, String userId, Integer quantity){

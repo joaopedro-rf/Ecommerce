@@ -4,6 +4,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myapp.ecommerce.controller.MessageController;
 import com.myapp.ecommerce.entity.awsDto.AddToCartMessage;
 import com.myapp.ecommerce.entity.Cart;
 import com.myapp.ecommerce.entity.awsDto.RefundCartMessage;
@@ -16,12 +17,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Log4j2
 public class SqsConsumer {
+
+    @Autowired
+    private MessageController messageController;
 
     private final AmazonSQS amazonSQSClient;
     private final CartService cartService;
@@ -40,7 +45,7 @@ public class SqsConsumer {
         this.cartService = cartService;
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 1000)
     public void consumeAddToCartMessageSQS() {
         if (lock.tryLock()) {
             try {
@@ -67,6 +72,11 @@ public class SqsConsumer {
                             .withQueueUrl(addToCartQueueUrl)
                             .withReceiptHandle(message.getReceiptHandle());
                     amazonSQSClient.deleteMessage(deleteRequest);
+                    messageController.sendMessageToWebSocket(
+                            String.format("Add to cart message processed: %s", addToCartMessage));
+                }
+                else {
+                    System.out.println("Empty queue");
                 }
             } catch (QueueDoesNotExistException e) {
                 System.out.println("Queue doesnt exist" + e.getMessage());
@@ -74,6 +84,8 @@ public class SqsConsumer {
                 throw new RuntimeException(e);
             } catch (AmazonSQSException e) {
                 System.out.println("Error deleting message from SQS queue: " + e.getErrorMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             } finally {
                 lock.unlock();
             }
@@ -82,7 +94,7 @@ public class SqsConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 1000)
     public void refundCartMessageSQS() {
         if (lock.tryLock()) {
             Message message = null;
@@ -110,7 +122,8 @@ public class SqsConsumer {
                             .withQueueUrl(refundCartQueueUrl)
                             .withReceiptHandle(message.getReceiptHandle());
                     amazonSQSClient.deleteMessage(deleteRequest);
-
+                    messageController.sendMessageToWebSocket(
+                            String.format("Add to cart message processed: %s", refundCartMessage));
                 }
             } catch (QueueDoesNotExistException e) {
                 System.out.println("Queue doesnt exist" + e.getMessage());
@@ -124,6 +137,9 @@ public class SqsConsumer {
                         .withReceiptHandle(message.getReceiptHandle());
 
                 amazonSQSClient.deleteMessage(deleteMessageRequest);
+
+                throw new RuntimeException(e);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
                 lock.unlock();
@@ -132,5 +148,8 @@ public class SqsConsumer {
             System.out.println("A message is already being processed.");
         }
     }
+
+
+
 }
 
