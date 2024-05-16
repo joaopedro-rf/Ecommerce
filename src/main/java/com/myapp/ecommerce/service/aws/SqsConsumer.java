@@ -50,7 +50,10 @@ public class SqsConsumer {
         if (lock.tryLock()) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
-                ReceiveMessageResult result = amazonSQSClient.receiveMessage(addToCartQueueUrl);
+                ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
+                        .withQueueUrl(addToCartQueueUrl)
+                        .withWaitTimeSeconds(20);
+                ReceiveMessageResult result = amazonSQSClient.receiveMessage(receiveMessageRequest);
 
                 if (!result.getMessages().isEmpty()) {
                     Message message = result.getMessages().get(0);
@@ -100,7 +103,11 @@ public class SqsConsumer {
             Message message = null;
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
-                ReceiveMessageResult result = amazonSQSClient.receiveMessage(refundCartQueueUrl);
+
+                ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
+                        .withQueueUrl(refundCartQueueUrl)
+                        .withWaitTimeSeconds(20);
+                ReceiveMessageResult result = amazonSQSClient.receiveMessage(receiveMessageRequest);
 
                 if (!result.getMessages().isEmpty()) {
                     message = result.getMessages().get(0);
